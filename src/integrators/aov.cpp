@@ -93,6 +93,8 @@ public:
         Albedo,
         Depth,
         Position,
+	Wi,
+	Wo,
         UV,
         GeometricNormal,
         ShadingNormal,
@@ -125,6 +127,16 @@ public:
                 m_aov_names.push_back(item[0] + ".T");
             } else if (item[1] == "position") {
                 m_aov_types.push_back(Type::Position);
+                m_aov_names.push_back(item[0] + ".X");
+                m_aov_names.push_back(item[0] + ".Y");
+                m_aov_names.push_back(item[0] + ".Z");
+            } else if (item[1] == "wi") {
+                m_aov_types.push_back(Type::Wi);
+                m_aov_names.push_back(item[0] + ".X");
+                m_aov_names.push_back(item[0] + ".Y");
+                m_aov_names.push_back(item[0] + ".Z");
+            } else if (item[1] == "wo") {
+                m_aov_types.push_back(Type::Wo);
                 m_aov_names.push_back(item[0] + ".X");
                 m_aov_names.push_back(item[0] + ".Y");
                 m_aov_names.push_back(item[0] + ".Z");
@@ -252,6 +264,24 @@ public:
                     *aovs++ = si.p.x();
                     *aovs++ = si.p.y();
                     *aovs++ = si.p.z();
+                    break;
+
+                case Type::Wi: {
+			Vector3f wi = si.wi;
+                    	*aovs++ = wi.x();
+                    	*aovs++ = wi.y();
+                    	*aovs++ = wi.z();
+		    }
+                    break;
+
+                case Type::Wo: {
+                	DirectionSample3f ds; Spectrum emitter_val;
+                	std::tie(ds, emitter_val) = scene->sample_emitter_direction(si, sampler->next_2d(active), true, active);
+  	                Vector3f wo = si.to_local(ds.d);
+                    	*aovs++ = wo.x();
+                    	*aovs++ = wo.y();
+                    	*aovs++ = wo.z();
+		    }
                     break;
 
                 case Type::UV:
